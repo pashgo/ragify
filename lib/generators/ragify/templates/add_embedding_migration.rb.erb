@@ -1,0 +1,9 @@
+class AddRagifyEmbeddingTo<%= table_name.camelize %> < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
+  def change
+    enable_extension "vector" unless extension_enabled?("vector")
+
+    add_column :<%= table_name %>, :embedding, :vector, limit: <%= dimensions %>
+    add_column :<%= table_name %>, :embedding_digest, :string
+    add_index :<%= table_name %>, :embedding, using: :ivfflat, opclass: :vector_cosine_ops
+  end
+end
