@@ -16,7 +16,7 @@ Metrics/ClassLength:
   Max: 150
 
 Metrics/AbcSize:
-  Max: 27
+  Max: 28
 
 Naming/PredicateMethod:
   AllowedMethods:

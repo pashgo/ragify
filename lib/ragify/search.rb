@@ -2,13 +2,14 @@
 
 module Ragify
   # Semantic vector search against an Embeddable model.
+  # Accepts any ActiveRecord scope, so you can pre-filter by tenant, status, etc.
   #
-  #   Search.new(FaqEntry).call("how does cashback work?")
-  #   # => [{ record: #<FaqEntry>, content: "...", similarity: 0.87 }, ...]
+  #   Search.new(FaqEntry.published).call("how does cashback work?")
+  #   Search.new(FaqEntry.where(tenant_id: 1)).call("refund policy")
   #
   class Search
-    def initialize(model)
-      @model = model
+    def initialize(scope)
+      @scope = scope
     end
 
     def call(query, limit: nil, threshold: nil)
@@ -20,7 +21,7 @@ module Ragify
 
       set_ivfflat_probes
 
-      results = @model
+      results = @scope
                 .with_embedding
                 .nearest_neighbors(:embedding, embedding, distance: "cosine")
                 .limit(limit * 2)
@@ -35,7 +36,7 @@ module Ragify
     private
 
     def set_ivfflat_probes
-      @model.connection.execute("SET ivfflat.probes = #{config.ivfflat_probes}")
+      @scope.connection.execute("SET ivfflat.probes = #{config.ivfflat_probes}")
     end
 
     def format_result(record)

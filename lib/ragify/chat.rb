@@ -59,10 +59,10 @@ module Ragify
         messages << { role: msg[:role].to_s, content: msg[:content].to_s }
       end
 
-      user_content = if context.present?
-                       "Context:\n#{context}\n\n---\n\nQuestion: #{query}"
-                     else
+      user_content = if context.empty?
                        query
+                     else
+                       "Context:\n#{context}\n\n---\n\nQuestion: #{query}"
                      end
 
       messages << { role: "user", content: user_content }
